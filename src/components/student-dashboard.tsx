@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { StudentTestRunner } from "@/components/student-test-runner";
 
 type StudentOverview = {
   chapters: Array<{
@@ -40,7 +39,6 @@ export function StudentDashboard() {
   const [overview, setOverview] = useState<StudentOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
-  const [activeTestId, setActiveTestId] = useState<string | null>(null);
 
   useEffect(() => {
     void loadOverview();
@@ -79,20 +77,9 @@ export function StudentDashboard() {
     [overview],
   );
 
-  const tests = useMemo(
-    () =>
-      overview?.tests.filter(
-        (item) => item.published && item.topic.chapter.title.toLowerCase().includes("angielski"),
-      ) ?? [],
-    [overview],
-  );
-
   const metrics = useMemo(
-    () => [
-      { label: "Materiały", value: materials.length },
-      { label: "Testy", value: tests.length },
-    ],
-    [materials.length, tests.length],
+    () => [{ label: "Materiały", value: materials.length }],
+    [materials.length],
   );
 
   return (
@@ -101,13 +88,13 @@ export function StudentDashboard() {
         <span className="inline-flex rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-800">
           Panel ucznia
         </span>
-        <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950">Nauka i testy z języka angielskiego</h1>
+        <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950">Nauka z języka angielskiego</h1>
         <p className="mt-3 text-base leading-7 text-slate-600">
-          Kliknij materiał, aby przejść do nowej strony z nawigacją po tematach. Kliknij test, aby go wypełnić i od razu zobaczyć wynik.
+          Kliknij materiał, aby przejść do nowej strony z nawigacją po tematach.
         </p>
       </div>
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-3">
+      <div className="mt-8 grid gap-3 sm:grid-cols-1">
         {metrics.map((metric) => (
           <div key={metric.label} className="rounded-3xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
             <p className="text-3xl font-black text-slate-950">{metric.value}</p>
@@ -123,7 +110,7 @@ export function StudentDashboard() {
           Brak tematów z języka angielskiego w bazie.
         </div>
       ) : (
-        <div className="mt-10 grid gap-6 xl:grid-cols-2">
+        <div className="mt-10 grid gap-6">
           <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-bold text-slate-950">Materiały do nauki</h2>
             <div className="mt-4 space-y-4">
@@ -142,38 +129,10 @@ export function StudentDashboard() {
             </div>
             <p className="mt-6 text-sm text-slate-500">Po kliknięciu otworzy się nowa strona materiału z lewą nawigacją po tematach i testach.</p>
           </div>
-
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-950">Testy słówek</h2>
-            <div className="mt-4 space-y-4">
-              {tests.map((test) => (
-                <button
-                  key={test.id}
-                  type="button"
-                  onClick={() => setActiveTestId(test.id)}
-                  className="block w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left text-slate-950 transition hover:border-slate-300"
-                >
-                  <p className="font-semibold">{test.title}</p>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {test.questionCount} słówek
-                  </p>
-                </button>
-              ))}
-            </div>
-            <p className="mt-6 text-sm text-slate-500">Kliknij test, aby otworzyć popup i rozwiązać pytanie po pytaniu.</p>
-          </div>
         </div>
       )}
 
       {loading ? <p className="mt-6 text-sm text-slate-500">Ładowanie danych...</p> : null}
-
-      {activeTestId ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4">
-          <div className="max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
-            <StudentTestRunner testId={activeTestId} mode="modal" onClose={() => setActiveTestId(null)} />
-          </div>
-        </div>
-      ) : null}
     </section>
   );
 }
