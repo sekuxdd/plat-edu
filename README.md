@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EduPlatforma
 
-## Getting Started
+Platforma edukacyjna z publiczną stroną główną, logowaniem, panelem nauczyciela i panelem ucznia.
 
-First, run the development server:
+## Funkcje
+
+- Publiczna strona główna z opisem platformy.
+- Logowanie przez backend API z sesją w HttpOnly cookie.
+- Panel nauczyciela do zarządzania rozdziałami, tematami, materiałami i testami.
+- Panel ucznia do nauki i rozwiązywania testów.
+- Prisma + SQL Server jako warstwa danych.
+
+## Uruchomienie lokalne
+
+Wymagane są zmienne środowiskowe `DATABASE_URL` i `SESSION_SECRET`.
 
 ```bash
+npm install
+npm run db:push
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Azure App Service
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Najprostszy wariant wdrożenia:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Utwórz Azure SQL Database.
+2. Ustaw `DATABASE_URL` na connection string SQL Server.
+3. Ustaw `SESSION_SECRET`.
+4. Na App Service wybierz Node.js 20 LTS.
+5. Ustaw startup command na `npm run azure:start`.
 
-## Learn More
+Przykładowy connection string:
 
-To learn more about Next.js, take a look at the following resources:
+```text
+sqlserver://twoj-serwer.database.windows.net:1433;database=EduPlatforma;user=twoj-user;password=twoje-haslo;encrypt=true;trustServerCertificate=false
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Po pierwszym wdrożeniu warto uruchomić seed danych demo przez `npm run db:seed`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Szybkie uruchomienie na Windows
 
-## Deploy on Vercel
+```bash
+npm run launch
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Skrypt przygotowuje bazę, buduje aplikację i uruchamia serwer pod adresem sieciowym.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Dane demo
+
+- Nauczyciel: `nauczyciel@demo.pl` / `teacher123`
+- Uczeń: `uczen@demo.pl` / `student123`
+
+## API
+
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
+- `GET /api/overview`
+- `GET|POST /api/chapters`
+- `PUT|DELETE /api/chapters/[id]`
+- `GET|POST /api/topics`
+- `PUT|DELETE /api/topics/[id]`
+- `GET|POST /api/materials`
+- `PUT|DELETE /api/materials/[id]`
+- `GET|POST /api/tests`
+- `PUT|DELETE /api/tests/[id]`
+
+## Strony
+
+- `/` - strona główna
+- `/login` - logowanie
+- `/teacher` - panel nauczyciela
+- `/student` - panel ucznia
